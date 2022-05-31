@@ -1,0 +1,27 @@
+ОБЪЕДИНЕНИЕ (КОНКАТЕНАЦИЯ)
+
+select commission_pct, commission_pct/2 from employees;
+
+select distinct commission_pct, commission_pct/2 from employees;
+
+select * from job_history;
+
+select start_date, end_date, (end_date-start_date) + 1 from job_history;
+
+select start_date, start_date+7 from job_history;
+
+concatenation = || - объединяет тексты
+
+например, выводим слитную информацию имя+фамилия
+
+select first_name||last_name from employees;
+
+Объединим для примера имя и зарплату
+
+select first_name||salary from employees;
+
+select employee_id||salary from employees;
+
+select 'My name is '||first_name||' and my surname is '||last_name from employees;
+
+select 'A'||commission_pct||'B' from employees;

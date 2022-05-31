@@ -1,0 +1,50 @@
+ROUND(n, precision)
+ГДЕ
+n - число
+precision - точность
+
+
+select ROUND(3.14) from dual;
+select ROUND(3.14728, 1) from dual;
+select ROUND(3.14728, 2) from dual;
+select ROUND(3.14728, 3) from dual;
+select ROUND(3.14728, 4) from dual;
+
+select salary*3.1415 from employees;
+select salary*3.1415, ROUND(salary*3.1415) from employees;
+
+
+select ROUND(356826, -1) from dual;
+select ROUND(356826, -2) from dual;
+select ROUND(356826, -3) from dual;
+
+select SYSDATE - hire_date from employees;
+select first_name, ROUND(SYSDATE - hire_date) bonus from employees;
+
+
+__________________________________________________________________________
+TRUNC(n, precision)
+ROUND ОКРУГЛЯЕТ В БОЛЬШУЮ СТОРОНУ, А TRUNC ПРОСТО ОТСЕКАЕТ
+
+select ROUND(3.56798, 3) from dual;
+select TRUNC(3.56798, 3) from dual;
+
+select TRUNC(356826, -2) from dual;
+
+select first_name, ROUND(SYSDATE - hire_date) bonus,
+TRUNC(SYSDATE - hire_date) BONUS2 from employees;
+
+__________________________________________________________________________
+MOD(dividend, divisor)
+devidend - делимое
+divisor - делитель
+
+MOD определяет остаток от деления
+
+select MOD(7, 3) from dual;
+select MOD(3.2, 2.1) from dual;
+
+select * from employees where mod(employee_id, 2) = 0;
+
+select employee_id, first_name, last_name, MOD(employee_id, 3)+1 Team
+from employees;

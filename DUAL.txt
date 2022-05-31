@@ -1,0 +1,27 @@
+Таблица DUAL
+
+select 'abc' || 'xyz' || (90*30) as result from dual;
+
+select * from dual;
+
+desc dual;
+
+select 'Hello '|| 'world!' as greeting from dual;
+
+Выведем возраст в секундах используя dual (Таблица с одним столбцом, одной строкой)
+
+select 25 * 365 * 24 * 60 * 60 "25 years in seconds" from dual;
+
+Используем dual для вычисления значений
+
+select 25+32*2 from dual;
+
+Грамотное используем ковычки
+
+select 'It''s my life' from dual;
+
+select 'It"s my life' from dual;
+
+Использование q-оператора
+
+select q'<It's my life>' from dual

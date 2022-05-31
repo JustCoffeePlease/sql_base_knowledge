@@ -1,0 +1,35 @@
+____________________________________________________________________________
+ORACLE JOIN SYNTAX
+
+-INNER JOIN
+SELECT column(s)
+FROM table_1 t1, table_2 t2
+WHERE t1.column1 = t2.column2;
+
+select first_name, last_name, salary, e.department_id, department_name
+from employees e, departments d
+where e.department_id = d.department_id;
+
+-RIGHT OUTER JOIN
+SELECT column(s)
+FROM table_1 t1, table_2 tw
+WHERE t1.column1 (+) = t2.column2;
+
+select first_name, last_name, salary, e.department_id, department_name
+from employees e, departments d
+where e.department_id(+) = d.department_id;
+
+-LEFT OUTER JOIN
+SELECT column(s)
+FROM table_1 t1, table_2 tw
+WHERE t1.column1  = t2.column2 (+);
+
+select first_name, last_name, salary, e.department_id, department_name
+from employees e, departments d
+where e.department_id = d.department_id(+);
+
+-CROSS JOIN
+SELECT column(s)
+FROM table_1 t1, table_2 t2;
+
+select * from countries, regions;

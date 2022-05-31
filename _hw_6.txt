@@ -1,0 +1,67 @@
+#############################################################################
+homework_6
+
+select
+department_id,
+min(salary) MIN_SALARY,
+max(salary) MAX_SALARY,
+min(hire_date) EARLIEST_HIRE_DATE,
+max(hire_date) LATEST_HIRE_DATE,
+count(*)
+from employees
+group by department_id
+order by department_id DESC;
+
+select
+substr(first_name, 1, 1) as "FIRST_WORD",
+count(substr(first_name, 1, 1)) as "AMOUNT"
+from employees
+group by substr(first_name, 1, 1)
+having count(substr(first_name, 1, 1)) > 1; 
+
+select department_id, salary, count(*)
+from employees
+group by department_id, salary
+order by department_id;
+
+select to_char(hire_date, 'Day'), count(*)
+from employees
+group by to_char(hire_date, 'Day');
+
+select department_id
+from employees
+group by department_id
+having count(*) > 30 and
+sum(salary) > 300000
+order by department_id;
+
+select region_id
+from countries
+group by region_id
+having sum(length(country_name)) > 50;
+
+select job_id, avg(salary)
+from employees
+group by job_id;
+
+select department_id
+from employees
+group by department_id
+having count(distinct(job_id)) > 1
+order by department_id;
+
+select department_id, job_id, max(salary), min(salary)
+from employees
+group by department_id, job_id
+having avg(salary) > 10000;
+
+select manager_id, trunc(avg(salary))
+from employees
+where commission_pct is NULL
+group by manager_id
+having avg(salary) between 6000 and 9000
+order by manager_id;
+
+select round(max(avg(salary)),-3)
+from employees
+group by department_id;

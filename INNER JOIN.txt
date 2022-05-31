@@ -1,0 +1,201 @@
+
+############################################################################
+############################################################################
+JOIN
+
+-INNER (NATURAL) JOIN
+-OUTER JOIN
+-CROSS JOIN
+
+-EQUIJOIN
+-NONEQUIJOIN
+
+select * from employees;
+select * from departments;
+
+
+select employees.salary, employees.first_name from employees;
+select e.salary, e.first_name from employees e;
+
+############################################################################
+INNER(NATURAL) JOIN
+
+SELECT column(s)
+FROM table_1
+NATURAL JOIN
+table_2;
+
+select * from regions;
+select * from countries;
+
+select * from regions 
+NATURAL JOIN countries;
+
+select c.country_name, c.country_id, r.region_name, region_id
+from regions r NATURAL JOIN countries c;
+
+select * from employees where department_id = 90 AND manager_id = 100;
+select * from departments where department_id = 90 AND manager_id = 100;
+
+select first_name, last_name, salary, department_name, department_id, manager_id
+from employees NATURAL JOIN departments;
+
+select * from employees natural join countries;
+
+select * from employees;
+select * from job_history;
+
+select * from employees natural join job_history;
+
+select country_name, country_id, region_name, region_id
+from regions NATURAL JOIN countries
+where region_name = 'Europe';
+
+___________________________________________________________________________
+NATURAL JOIN with USING
+
+SELECT column(s)
+FROM table_1
+JOIN
+table_2
+USING (column(s));
+
+Используя какие столбцы мы хотим объединить таблицы
+
+select first_name, last_name, salary, department_name, department_id, manager_id
+from employees NATURAL JOIN departments;
+
+select first_name, last_name, salary, department_name,
+e.manager_id emp_manager, d.manager_id dep_manager,
+department_id
+from employees e JOIN departments d USING (department_id);
+
+select * from regions;
+select * from countries;
+select * from regions join countries using (region_id);
+результат тот же, что и 
+select * from regions natural join countries;
+
+select * from job_history;
+
+
+select first_name, last_name, jh.job_id, start_date, end_date
+from employees join job_history jh using (employee_id);
+
+select first_name, last_name, jh.job_id, start_date, end_date
+from employees join job_history jh using (employee_id, department_id);
+
+____________________________________________________________________________
+NATURAL JOIN WITH ON
+
+SELECT column(s)
+FROM table_1
+JOIN table_2
+ON (column1 = column2)
+
+select first_name, last_name, jh.job_id, start_date, end_date
+from employees join job_history jh using (employee_id);
+
+select first_name, last_name, jh.job_id, start_date, end_date
+from employees join job_history jh on (employees.employee_id = jh.employee_id);
+
+select first_name, last_name, jh.job_id, start_date, end_date,
+employees.employee_id, jh.employee_id
+from employees join job_history jh on (employees.employee_id = jh.employee_id);
+
+select * from regions;
+select * from departments;
+
+select * from departments JOIN regions ON
+(region_id = department_id);
+
+select * from departments JOIN regions ON
+(region_id*10 = department_id);
+
+
+select first_name, last_name, jh.job_id, start_date, end_date
+from employees e join job_history jh on
+(e.employee_id = jh.employee_id and e.department_id = jh.department_id);
+То же самое, что и
+select first_name, last_name, jh.job_id, start_date, end_date
+from employees join job_history jh using (employee_id, department_id);
+
+select * from departments;
+select * from employees;
+select first_name, department_name from employees JOIN departments
+ON (employees.employee_id = departments.manager_id);
+
+
+____________________________________________________________________________
+Примеры на объединение более двух таблиц
+
+select * from regions;
+select * from countries;
+select * from locations;
+select * from locations NATURAL JOIN countries NATURAL JOIN regions;
+
+select * from locations join countries using(country_id)
+JOIN regions USING (region_id);
+
+select first_name, last_name, jh.job_id, start_date, end_date, department_name
+from employees e 
+join job_history jh on(e.employee_id = jh.employee_id)
+join departments d on (jh.department_id = d.department_id);
+
+select first_name, last_name, jh.job_id, start_date, end_date, department_name
+from employees e 
+join job_history jh using(employee_id)
+join departments d on (jh.department_id = d.department_id);
+
+select department_name, min(salary), max(salary)
+from employees e join departments d on (e.department_id = d.department_id)
+group by department_name
+order by min(salary), max(salary) DESC;
+
+____________________________________________________________________________
+NONEQUIJOIN with ON
+
+до этого были рассмотреты EQUIJOIN, где мы сравнивали
+столбцы и приравнивали их друг к другу
+
+NONEQUIJOIN - объединение таблиц с помощью неравенств
+
+SELECT column(s)
+FROM table_1
+JOIN
+table_2
+ON (column1 {оператор неравенства} column2);
+
+select * from jobs;
+
+select first_name, salary, min_salary, max_salary
+from employees e join jobs  j on
+(e.job_id = j.job_id and salary*2 < max_salary);
+
+
+select first_name, salary, min_salary, max_salary
+from employees e join jobs  j on
+(e.job_id = j.job_id and salary = max_salary);
+
+select first_name, salary, min_salary, max_salary
+from employees e join jobs  j on
+(e.job_id = j.job_id and salary < max_salary);
+
+select first_name, salary, min_salary, max_salary
+from employees e join jobs  j on
+(e.job_id = j.job_id and
+salary between min_salary + 2000 and max_salary-3000);
+
+___________________________________________________________________________
+SELF JOIN
+
+select employee_id, first_name, manager_id from employees;
+
+select emp1.employee_id, emp1.first_name, emp1.manager_id,
+emp2.first_name manager_name
+from employees emp1 join employees emp2 on (emp1.manager_id = emp2.employee_id);
+
+select emp2.first_name manager_name, count(*)
+from employees emp1 join employees emp2 on (emp1.manager_id = emp2.employee_id)
+group by emp2.first_name
+order by count(*);

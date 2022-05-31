@@ -1,0 +1,174 @@
+############################################################################
+############################################################################
+SET OPERATORS (Операторы множеств)
+
+-UNION
+-UNION ALL
+-INTERSECT
+-MINUS
+
+____________________________________________________________________________
+UNION ALL
+Объединяет 2 output множества в одно простым соединением
+
+select * from jobs 
+where job_id like '%MAN%'
+UNION ALL
+select * from jobs 
+where job_id like '%MAN%';
+
+select * from jobs 
+where job_id like '%MAN%';
+
+select * from jobs;
+
+select job_id, max_salary
+from jobs
+where job_id like '%MAN%'
+UNION ALL
+select job_title, min_salary
+from jobs
+where job_id like '%MAN%';
+
+select job_id, job_title, min_salary from jobs 
+where job_id like '%MAN%'
+UNION ALL
+select job_id, job_title, min_salary from jobs 
+where job_id like '%MAN%'
+order by min_salary DESC;
+
+select job_id, job_title, min_salary from jobs 
+where job_id like '%MAN%'
+UNION ALL
+select job_id, job_title, max_salary from jobs 
+where job_id like '%MAN%'
+order by min_salary DESC;
+
+select first_name, last_name, salary
+from employees
+where employee_id > 200
+UNION ALL
+select job_id, job_title, max_salary from jobs
+where job_id like '%MAN%';
+
+select country_id from countries
+UNION ALL
+select country_name from countries;
+
+select country_id from countries
+UNION ALL
+select region_id from countries;
+---Возвращает ошибку так как разные типы у присоединяемых множеств
+
+____________________________________________________________________________
+UNION
+Объединяет 2 output множества в одно, удаляя при этом дубликаты и сортируя его
+
+select * from jobs 
+where job_id like '%MAN%'
+UNION
+select * from jobs 
+where job_id like '%MAN%';
+
+select * 
+from jobs
+where min_salary between 4500 and 8000
+UNION
+select * 
+from jobs
+where max_salary between 10000 and 15000
+order by 3;
+
+____________________________________________________________________________
+INTERSECT
+Возвращает только общие строки, удаляя при этом дубликаты и сортируя результат
+
+select * from jobs 
+where job_id like '%MAN%'
+INTERSECT
+select * from jobs 
+where job_id like '%MAN%';
+
+select * 
+from jobs
+where min_salary between 4500 and 8000
+INTERSECT
+select * 
+from jobs
+where max_salary between 10000 and 15000
+order by 3;
+
+select first_name, last_name from employees
+INTERSECT 
+select street_address, city from locations;
+
+_____________________________________________________________________________
+MINUS
+Возвращает только те строки, которые есть в первом множестве, но которых нет во
+втором множестве, удаляя при этом дубликаты и сортируя результат
+
+select * from jobs 
+where job_id like '%MAN%'
+MINUS
+select * from jobs 
+where job_id like '%MAN%';
+
+select * 
+from jobs
+where min_salary between 4500 and 8000
+MINUS
+select * 
+from jobs
+where max_salary between 10000 and 15000
+order by 3;
+
+_____________________________________________________________________________
+Примеры на SET операторы
+
+select first_name, salary from employees
+where first_name like '%a%'
+INTERSECT
+select first_name, salary from employees
+where first_name like '%e%'
+MINUS
+select first_name, salary from employees
+where first_name like '%l%';
+
+select first_name, salary from employees
+where first_name like '%a%'
+UNION
+select first_name, salary from employees
+where first_name like '%e%'
+MINUS
+select first_name, salary from employees
+where first_name like '%l%';
+
+select first_name, salary from employees
+where first_name like '%a%'
+UNION
+(select first_name, salary from employees
+where first_name like '%e%'
+MINUS
+select first_name, salary from employees
+where first_name like '%l%');
+
+select manager_id
+from employees
+where department_id = 20
+INTERSECT
+select manager_id
+from employees
+where department_id = 30;
+
+
+select department_id dep, sum(salary) from employees
+group by department_id;
+
+select job_id, sum(salary) from employees
+group by job_id;
+
+select department_id dep_id, to_char(null) job_id, sum(salary) from employees
+group by department_id
+UNION
+select to_number(null), job_id, sum(salary) from employees
+group by job_id;

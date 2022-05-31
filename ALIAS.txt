@@ -1,0 +1,32 @@
+ALIAS-альтернативное имя для столбца или целевого значения
+
+
+select 'My name is '||first_name||' and my surname is '||last_name 
+                                                                from employees;
+В этом случае название столбца сложное. Назовем получаемый столбец name. Для
+этого используем следующее выражение
+
+select 'My name is '||first_name||' and my surname is '||last_name NAME
+                                                                from employees;
+ИЛИ
+
+select 'My name is '||first_name||' and my surname is '||last_name as NAME
+                                                        from employees;
+                                 
+Другой пример
+
+select commission_pct from employees;
+
+Колонка называется OMMISSION_PCT. Пусть она будет называться COMMISSION
+
+select commission_pct commission from employees;
+
+select first_name fn, last_name ln, commission_pct pct from employees;
+
+Рассмотрим следующий пример. Обратим внимание на название полученного столбца
+
+select start_date, end_date, (end_date-start_date) + 1 from job_history;
+
+Исправим это
+
+select start_date, end_date, (end_date-start_date) + 1 "Count of days" from job_history;

@@ -1,0 +1,173 @@
+FUNCTIONS
+Бывают
+        - Single-row,
+        - Multiple-row
+        
+        
+Single-row: Character functions
+Функции, которые работают с тексом: 
+
+select * from employees;
+select first_name, LOWER(first_name) from employees;
+
+___________________________________________________
+LOWER() - Функция работает с буквами. Приводит все к нижнему регистру
+
+select * from employees where LOWER(first_name) = 'david';
+select * from employees where LOWER(first_name) like '%en%';
+
+select LOWER(2+2*2) from dual;
+select LOWER('HELLO'||'HOW OLD ARE YOU?'||25) from dual;
+
+___________________________________________________
+UPPER() - Функция работает с буквами. Приводит все к верхнему регистру
+
+
+select * from employees where UPPER(first_name) like '%EN%';
+select * from employees where UPPER(first_name) = 'DAVID';
+
+___________________________________________________
+INITCAP(S) -В каждом слове текста, первую букву делает большой, 
+                                                        остальные маленькими
+
+select INITCAP('HELLO'||' HOW OLD ARE YOU? '||25) from dual;
+select INITCAP('hello'||' how old are you? '||25) from dual;
+
+SELECT INITCAP('NAME IS '||FIRST_NAME||' AND SURNAME IS '||LAST_NAME) FULL_NAME 
+FROM EMPLOYEES;
+
+____________________________________________________
+CONCAT(s,s) -функция конкатенации. Принимает две строки. Выполняет то же самое,
+что и ||
+
+select concat('Hello ',' How are you?') from dual;
+То же самое
+select 'Hello '||'How are you?' from dual;
+
+select concat(salary*2, hire_date) from employees;
+____________________________________________________
+Функция, которая возвращает текущую дату
+select SYSDATE from dual; 
+____________________________________________________
+
+select concat('today is ', SYSDATE) from dual;
+select concat('today is ', concat('current date ', SYSDATE)) from dual;
+
+
+____________________________________________________
+LENGTH() -функция, которая измеряент длину строки
+
+select first_name, length(first_name) DLINA from employees;
+select LENGTH('Alex Vasilev') from dual;
+
+select country_name from countries where length(country_name) > 8;
+
+select country_name from countries order by length(country_name);
+
+
+___________________________________________________________
+Функции LPAD(s,n,p) и RPAD(s,n,p)
+L - left, R - right
+Функции добавляют новые символы слева и справа строки
+
+select LPAD('Alex', 7, '#') from dual;
+select RPAD('Alex', 7, '#') from dual;
+select first_name, LPAD(first_name, 25, '$') from employees;
+
+select first_name, LPAD(first_name, 25, '$'), 
+RPAD(first_name, 25, '$')
+from employees;
+
+select RPAD(first_name, 15, ' ')||LPAD(salary, 8, ' ') from employees;
+
+
+_________________________________________________
+Trim -ф, которая удаляет символ в начале или в конце текста
+В основном используется для удаления лишних пробелов Сначала и Сконца строки
+TRIM({trailing|leading|both} trimstring from s)
+
+Удаление с конца
+select TRIM(trailing 'q' from 'Alex qqqqqqqqq') from dual;
+Удаление с начала
+select TRIM(leading 'u' from 'uuuuuuuuuAlex') from dual;
+Удаление с обоих концов
+select TRIM(both 'u' from 'uuuuuuuuuAlexuuuuuu') from dual;
+select TRIM('u' from 'uuuuuuuuuAlexuuuuuu') from dual;
+Удаление пробелов - можно отдельно не указывать пробел. Достаточно указать 
+корректируемую строку
+select TRIM(' ' from '       Alex         ') from dual;
+select TRIM('       Alex         ') from dual;
+
+
+
+____________________________________________________________________________
+CHARACTER FUNCTIONS
+
+___________________________________________________________________________
+instr(s, search string, start position Nth occurrence)
+
+Где 
+s - это строка, текст
+search string - искомый текст
+start position - позиция, для начала работы
+Nth occurrence - N-ое появление
+
+
+select * from employees;
+select * from employees where instr(job_id, 'PROG')=4;
+
+'=4' это позиция, с которой мы начинаем искать наш 'PROG'
+в колонке JOB_ID мы можем иметь IT_PROG
+В данном случае PROG начинается с 4 позиции
+
+select * from employees where instr(hire_date, 'MAY')=4;
+select * from employees where instr(SALARY, '2')=2;
+
+Следующий пример:
+SELECT INSTR('ALEKSEI VASILEV', 'V') FROM DUAL;
+
+Далее рассмотрим start position и Nth occurrence
+SELECT INSTR('ALEKSEI VASILEV', 'A', 2, 1) FROM DUAL;
+
+Первая 2 означает, что поиск начинается со второй позиции, то есть поиск будет 
+в LEKSEI VASILEV
+По умолчанию, мы ищем первое значение, в примере мы найдем первую "А", но
+мы можем прописать, чтобы искался номер этого значения, который идет по счету 
+вторым, третьим и тд. Для этого мы указываем второй числовой параметр. В нашем
+случае это 1
+
+
+___________________________________________________________________________
+SUBSTR(s, start position, number of characters)
+
+Где
+s - это строка, текст
+search string - искомый текст
+number of characters - количество символов
+
+
+select * from employees;
+select email, SUBSTR(email, 4) from employees;
+select email, SUBSTR(email, 4, 2) from employees;
+select SUBSTR('Hello! How are you?', 7, 8) from dual;
+
+Если использовать отрицательное число, то отсчет будет не слева направо,
+а справа налево
+select SUBSTR('Hello! How are you?', -9) from dual;
+
+
+select salary, SUBSTR(hire_date, 2, 3) from employees;
+
+
+__________________________________________________________________________
+REPLACE(s, search item, replacement item)- замена
+Где
+search item - искомый элемент
+replacement item - заменяющий элемент
+
+SELECT REPLACE('HELLO! HOW ARE YOU? WHATS NEW?', 'O', 'AAAA') FROM DUAL;
+
+Если нет информации, на что происходит замена, происходит удаление
+SELECT REPLACE('HELLO! HOW ARE YOU? WHATS NEW?', 'O') FROM DUAL;
+
+select salary, REPLACE(salary, '1', '9') from employees;

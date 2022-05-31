@@ -1,0 +1,33 @@
+____________________________________________________________________________
+NONEQUIJOIN with ON
+
+до этого были рассмотреты EQUIJOIN, где мы сравнивали
+столбцы и приравнивали их друг к другу
+
+NONEQUIJOIN - объединение таблиц с помощью неравенств
+
+SELECT column(s)
+FROM table_1
+JOIN
+table_2
+ON (column1 {оператор неравенства} column2);
+
+select * from jobs;
+
+select first_name, salary, min_salary, max_salary
+from employees e join jobs  j on
+(e.job_id = j.job_id and salary*2 < max_salary);
+
+
+select first_name, salary, min_salary, max_salary
+from employees e join jobs  j on
+(e.job_id = j.job_id and salary = max_salary);
+
+select first_name, salary, min_salary, max_salary
+from employees e join jobs  j on
+(e.job_id = j.job_id and salary < max_salary);
+
+select first_name, salary, min_salary, max_salary
+from employees e join jobs  j on
+(e.job_id = j.job_id and
+salary between min_salary + 2000 and max_salary-3000);

@@ -1,0 +1,70 @@
+#############################################################################
+homework_11
+
+CREATE TABLE friends
+as
+(select employee_id id,
+	first_name name,
+	last_name surname
+from employees
+where commission_pct is not null);
+
+select * from friends;
+
+alter table friends 
+add (email varchar2(15) default null);
+
+alter table friends
+modify (email varchar2(15) default 'no email');
+
+insert into friends (id, name, surname)
+values (220, 'Michael', 'Shilman');
+COMMIT;
+
+alter table friends
+rename column id to friends_id;
+
+drop table friends;
+
+create table friends (
+id integer,
+name varchar2(15),
+surname varchar2(15),
+email varchar2(15),
+salary number(10, 2) default 800,
+city varchar2(15),
+birthday date default to_date('1-JAN-1970', 'DD-MON-YYYY'))
+organization heap;
+
+select * from friends;
+
+insert into friends
+values (1, 'Anton', 'Yadikov', 'yadikov@mail.ru',
+        1200, 'Kazan', to_date('17-DEC-1994'));
+
+insert into friends (id, name, surname, email, city)
+values (2, 'Vasiliy', 'Boyarchuk', 'fuck@yandex.ru', 'Balashicha');
+
+commit;
+
+alter table friends
+drop column salary;
+
+alter table friends
+set unused column email;
+
+alter table friends
+set unused column birthday;
+
+alter table friends
+drop unused columns;
+
+alter table friends
+read only;
+
+insert into friends (id)
+values (3);
+
+truncate table friends;
+
+drop table friends;

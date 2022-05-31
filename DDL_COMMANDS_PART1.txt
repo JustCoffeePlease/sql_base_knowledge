@@ -1,0 +1,200 @@
+#############################################################################
+#############################################################################
+DDL commands;
+
+select object_type, count(object_type) from user_objects
+group by object_type
+order by object_type;
+
+select object_type, count(object_type) from all_objects
+group by object_type
+order by object_type;
+
+select table_name from user_tables;
+
+select column_name, data_type, nullable from user_tab_columns
+where table_name = 'DEPARTMENTS';
+
+--- ОСНОВНЫЕ DB ОБЪЕКТЫ
+
+---TABLE
+---VIEW (ИМЕННОВАННЫЙ SELECT)
+---SYNONYM (ALIAS FOR TABLE OR VIEW)
+---INDEX
+---SEQUENCE
+
+#############################################################################
+USERS AND SCHEMA
+
+USER - ЛИЦО, КОТОРОЕ МОЖЕТ ПОДКЛЮЧИТЬСЯ К БД
+       ИМЕЕТ USER_NAME И PASSWORD
+       
+SCHEMA - ОБЪЕКТЫ БД, КОТОРЫЕ ПРИНАДЛЕЖАТ ОДНОМУ USER
+
+_____________________________________________________________________________
+ПРАВИЛА НАЗВАНИЯ ОБЪЕКТОВ. ПОНЯТЯТИЕ NAMESPACE;
+
+1. Имя должно содержать от 1 до 30 символов
+2. Объект не может называться зарезервированным словом
+3. Все имена должны называться, начиная с буквы
+4. В названии можно использовать _ $, #
+5. Прописные буквы будут конвертированы в заглавные
+
+Правила 2-4 можно игнорировать, если занести название в кавычки
+
+create table "3 abc def"(
+id number
+);
+
+select * from "3abc def";
+
+NAMESPACE;
+Общее пространство, которое не допускает одинаковое название объектов
+
+_____________________________________________________________________________
+---CREATE TABLE;
+
+select * from employees;
+
+---CREATE TABLE schema.table ORGANIZATION HEAP
+---(column_name datatype DEAFAULT expt,
+---column_name datatype DEFAULT expr,
+---...);
+
+CREATE TABLE students (
+student_id integer,
+name varchar2(15),
+start_date date DEFAULT ROUND(SYSDATE),
+scholarship number(6, 2),
+avg_score number(4, 2) DEFAULT 5
+) ORGANIZATION HEAP;
+
+select * from students;
+
+INSERT INTO students (student_id, name, start_date, scholarship, avg_score)
+VALUES (1, 'Alex', TO_DATE('23-MAY-22'), 1500.3, 7.8);
+
+INSERT INTO students (student_id, name, start_date, scholarship, avg_score)
+VALUES (2, 'Olesya', TO_DATE('23-MAY-22'), 1000, 8);
+
+INSERT INTO students (student_id, name, scholarship)
+VALUES (3, 'Antonio', 800);
+COMMIT;
+
+select * from students;
+
+_____________________________________________________________________________
+---CREATE TABLE WITH SUBQUERY
+
+CREATE TABLE schema.table;
+AS
+subquery;
+
+select * from new_emps;
+
+CREATE TABLE new_emps2
+as
+(select employee_id, first_name, last_name,
+        salary, department_id from employees);
+
+        
+CREATE TABLE new_dep
+as
+(select department_name, max(salary) max_salary,
+        min(salary) min_salary from employees e
+join departments d using(department_id)
+group by department_name);
+
+select * from new_dep;
+
+select * from regions;
+
+CREATE TABLE regions2
+as (select * from regions where 5 = 6);
+
+select * from regions2;
+
+_____________________________________________________________________________
+ALTERING TABLE - ИЗМЕНЕНИЕ ТАБЛИЦЫ
+1.
+ALTER TABLE table_name
+ADD (column_name data_type DEFAULT expr);
+2.
+ALTER TABLE table_name
+MODIFY (column_name data_type DEFAULT expr);
+3.
+ALTER TABLE table_name
+DROP COLUMN column_name;
+4.
+ALTER TABLE table_name
+SET UNUSED COLUMN column_name;
+--- отличается от Drop тем, что колонка перестает быть видимой,
+--- но ее физического удаления не происходит.
+ALTER TABLE table_name DROP UNUSED COLUMNS;
+5.
+ALTER table_name
+RENAME COLUMN column_name1 TO column_name2;
+6. ALTER table_name READ ONLY;
+--- После этой операции, таблица становится доступна только для select
+--- DML команды выполнить невозможно 
+
+select * from students;
+
+ALTER TABLE students
+ADD (course number DEFAULT 3);
+
+ALTER TABLE students
+MODIFY (avg_score integer);
+--- Возвращается ошибка, так как в столбе есть ячейка со значением,
+--- не соответствующем формату integer
+
+ALTER TABLE students
+MODIFY (avg_score number(5, 3));
+
+ALTER TABLE students
+MODIFY (start_date date DEFAULT null);
+
+insert into students (student_id, name)
+values(4, 'Natasha');
+
+select * from students;
+
+ALTER TABLE students DROP COLUMN scholarship;
+
+ALTER TABLE students SET UNUSED COLUMN start_date;
+
+ALTER TABLE students DROP UNUSED COLUMNS;
+
+ALTER TABLE students
+RENAME COLUMN student_id TO id;
+
+____________________________________________________________________________
+TRUNCATE;
+--- Полностью удаляет все данные из таблицы
+
+TRUNCATE TABLE
+schema.table_name;
+
+select * from students;
+
+TRUNCATE TABLE students;
+--- Таблица students еще существует, но все строки удалены
+
+____________________________________________________________________________
+DROP TABLE; ---Удаление таблицы
+
+DROP TABLE
+schema.table_name;
+
+--- Для примера заполним строки
+INSERT INTO students (id, name, avg_score, course)
+VALUES (1, 'Alex', 85, 3);
+
+INSERT INTO students (id, name, avg_score, course)
+VALUES (1, 'Olesya', 99, 1);
+
+INSERT INTO students (id, name, avg_score, course)
+VALUES (1, 'Natasha', 90, 2);
+COMMIT;
+
+DROP TABLE students;

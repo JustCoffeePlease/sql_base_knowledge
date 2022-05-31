@@ -1,0 +1,110 @@
+#############################################################################
+homework_8
+
+select *
+from employees
+where length(first_name) = (select max(length(first_name)) from employees);
+
+select *
+from employees
+where salary > (select avg(salary) from employees);
+
+
+select l.city, sum(e.salary)
+from locations l
+join  departments d using (location_id)
+join employees e using(department_id)
+group by city 
+having sum(salary) = (select min(sum(e.salary))
+            from employees e
+            join departments d  on (e.department_id = d.department_id)
+            join locations l on (d.location_id = l.location_id)
+            group by city);
+
+select * from employees
+where manager_id in
+(select manager_id from employees
+where salary > 15000);
+
+
+---Вспомогательная инфа для 5ой задачи
+select * from employees 
+full outer join departments using(department_id);
+---5ая задача
+select * from departments
+where department_name not in
+(select d.department_name from employees e
+join departments d on (e.department_id = d.department_id)
+group by d.department_name);
+--- ВТОРОЙ ВАРИАНТ
+SELECT *
+FROM DEPARTMENTS
+WHERE DEPARTMENT_ID NOT IN (SELECT DISTINCT DEPARTMENT_ID
+                            FROM EMPLOYEES
+                            WHERE DEPARTMENT_ID IS NOT NULL);
+
+---Вспомогательная инфа для 6ой задачи
+select count(*), emp2.manager_id from employees emp1
+join employees emp2 on (emp1.manager_id = emp2.manager_id)
+group by emp2.manager_id;
+---6ая задача
+select * from employees
+where employee_id not in 
+(select emp2.manager_id from employees emp1
+join employees emp2 on (emp1.manager_id = emp2.manager_id)
+group by emp2.manager_id);
+--- ВТОРОЙ ВАРИАНТ
+SELECT *
+FROM employees
+WHERE employee_id NOT IN (SELECT DISTINCT manager_id
+                          FROM employees
+                          WHERE manager_id IS NOT NULL);
+
+select emp_numb, manager_id from
+(select count(*) as "EMP_NUMB", emp2.manager_id from employees emp1
+join employees emp2 on (emp1.manager_id = emp2.manager_id)
+group by emp2.manager_id)
+where emp_numb > 6;
+--- ВТОРОЙ ВАРИАНТ
+SELECT *
+FROM employees e
+WHERE (SELECT COUNT(*)
+       FROM employees
+       WHERE manager_id = e.employee_id) > 6;
+--- Во втором варианте использовался CORRELATED SUBQUERY
+
+select * from
+(select e.employee_id, e.first_name, e.last_name, e.email,
+        e.phone_number, e.hire_date, e.job_id,
+        e.commission_pct, e.manager_id, d.department_name from employees e
+join departments d using (department_id))
+where upper(department_name) like '%IT%';
+
+---Второй вариант
+select * from employees
+where department_id = 
+(select distinct(department_id) from departments
+where upper(department_name) like 'IT');
+
+---Третий вариант
+SELECT *
+FROM employees
+WHERE department_id = (SELECT department_id
+                       FROM departments
+                       WHERE department_name = 'IT');
+                       
+SELECT *
+FROM employees
+WHERE manager_id IN (SELECT employee_id
+                     FROM employees
+                     WHERE TO_CHAR (hire_date, 'YYYY') = '2005')
+      AND hire_date < TO_DATE ('01-01-2005', 'DD-MM-YYYY');
+      
+SELECT *
+FROM employees e
+WHERE manager_id IN (SELECT employee_id
+                     FROM employees
+                     WHERE TO_CHAR (hire_date, 'MM') = '01')
+      AND (SELECT LENGTH(job_title)
+           FROM jobs
+           WHERE job_id = e.job_id) > 15;

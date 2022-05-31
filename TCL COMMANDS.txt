@@ -1,0 +1,99 @@
+_____________________________________________________________________________
+TCL COMMANDS:
+COMMIT;
+--- Заканчивает текущую транзакцию. После завершения, изменения становятся
+--- видимыми остальным пользователям. До коммита, изменения видны только для
+--- текущей сессии
+
+select * from new_emps;
+delete from new_emps
+where name = 'Pat';
+commit;
+
+insert into new_emps values (1000, 'Olesia', sysdate, 'IT_PROG');
+update new_emps set emp_id = 300 where emp_id = 100;
+delete from new_emps where emp_id = 101;
+commit;
+
+_____________________________________________________________________________
+TCL COMMANDS:
+ROLLBACK;
+
+--- Откат всей информации до начала транзакции
+
+ROLLBACK TO SAVEPOINT savepoint_name;
+
+delete from new_emps;
+
+insert into new_emps
+(select employee_id, last_name, hire_date, job_id from employees);
+commit;
+
+select * from new_emps;
+
+insert into new_emps values (1000, 'Olesia', sysdate, 'IT_PROG');
+update new_emps set emp_id = 300 where emp_id = 100;
+delete from new_emps where emp_id = 101;
+rollback;
+
+--- Если rollback сделать сразу же после commit, то изменения не откатятся
+--- Так как commit фиксирует все изменения и делает их доступными для
+--- Других сессий
+
+select * from new_emps;
+
+_____________________________________________________________________________
+TCL COMMANDS:
+SAVEPOINT;
+
+select * from new_emps;
+
+delete from new_emps;
+
+insert into new_emps
+(select employee_id, last_name, hire_date, job_id from employees);
+commit;
+
+insert into new_emps values (1000, 'Olesia', sysdate, 'IT_PROG');
+savepoint s1;
+update new_emps set emp_id = 300 where emp_id = 100;
+savepoint s2;
+delete from new_emps where emp_id = 101;
+rollback; --- Откат к началу транзакции
+rollback to savepoint s2; --- Откат к этапу s2
+--- rollback to savepoint не закрывает транзакцию, а rollback закрывает
+commit;
+
+_____________________________________________________________________________
+TCL COMMANDS:
+AUTOCOMMIT;
+
+--- чтобы подключить, в командной строке пишем
+--- set autocommit on;
+--- чтобы выключить, пишем в командной строке
+--- set autocommit off;
+select * from new_emps;
+
+
+insert into new_emps values (1000, 'Olesia', sysdate, 'IT_PROG');
+
+update new_emps set emp_id = 300 where emp_id = 100;
+
+delete from new_emps where emp_id = 101;
+commit;
+
+--- В SQL Developer:
+---Tools -> Preferences ->Database -> Advanced -> Установить галочку autocommit;
+
+_____________________________________________________________________________
+SELECT FOR UPDATE;
+
+select * from new_emps for update;
+--- При использовании for update, Oracle ставит lock на изменение
+--- указанной таблицы. lock будет висеть до тех пор, пока транзакция 
+--- не будет закрыта
+
+update new_emps set start_date = '12.JAN.17' where name = 'Olesia';
+commit;
+
+select * from new_emps;

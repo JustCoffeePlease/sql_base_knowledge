@@ -1,0 +1,76 @@
+#############################################################################
+homework_9
+
+select emp1.manager_id, emp1.job_id, emp1.department_id, sum(emp1.salary)
+from employees emp1
+group by emp1.manager_id, emp1.job_id, emp1.department_id
+order by emp1.manager_id, emp1.department_id, sum(emp1.salary);
+
+---Второй вариант
+SELECT manager_id, TO_CHAR(null) job_id,
+TO_NUMBER(null) department_id, SUM(salary)
+FROM employees
+GROUP BY manager_id
+UNION
+SELECT TO_NUMBER(null), job_id,
+TO_NUMBER(null), SUM(salary)
+FROM employees
+GROUP BY job_id
+UNION
+SELECT TO_NUMBER(null), TO_CHAR(null),
+department_id, SUM(salary)
+FROM employees
+GROUP BY department_id;
+
+select department_id from employees
+where to_number(manager_id, '999') = 100
+minus
+select department_id from employees
+where to_number(manager_id, '999') = 145
+minus
+select department_id from employees
+where to_number(manager_id, '999') = 201;
+
+---Второй вариант
+SELECT department_id FROM employees
+WHERE manager_id = 100
+MINUS
+SELECT department_id FROM employees
+WHERE manager_id IN (145, 201);
+
+
+select first_name, last_name, salary from employees
+where first_name like '_a%' and lower(last_name) like '%s%'
+order by salary desc;
+
+---Второй вариант
+select first_name, last_name, salary from employees
+where first_name like '_a%'
+INTERSECT
+select first_name, last_name, salary from employees
+where lower(last_name) like '%s%'
+order by salary desc;
+
+select loc.location_id, loc.postal_code, loc.city from locations loc
+join countries coun on (loc.country_id = coun.country_id)
+where coun.country_name in ('Italy','Germany')
+UNION ALL
+select location_id, postal_code, city from locations
+where postal_code like '%9%';
+
+---Второй вариант
+select location_id, postal_code, city from locations
+where country_id IN
+(select country_id from countries where country_name in ('Italy', 'Germany'))
+UNION ALL
+select location_id, postal_code, city from locations
+where postal_code like '%9%';
+
+SELECT country_id id, country_name country, region_id region 
+FROM countries
+WHERE LENGTH(country_name) > 8
+UNION
+SELECT * FROM countries
+WHERE region_id != (SELECT region_id FROM regions
+WHERE UPPER(region_name) = 'EUROPE')
+ORDER BY country DESC;

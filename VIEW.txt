@@ -1,0 +1,363 @@
+#############################################################################
+#############################################################################
+VIEW
+
+--- Simple
+--- Complex
+
+select * from employees;
+
+create view fin_emp as 
+(select employee_id, job_id, salary from employees);
+
+select * from fin_emp;
+
+create view fin_emp2 as
+(select department_name, sum(salary) sum_salary from employees e 
+join departments d on (e.department_id = d.department_id)
+group by department_name);
+
+select * from fin_emp2;
+
+select department_name from fin_emp2
+where sum_salary > 10000;
+
+create view emps_with_high_salary2 as
+(select first_name, last_name from employees 
+where salary >= 12000);
+
+update employees 
+set salary = 15000 
+where employee_id = 103;
+
+select * from emps_with_high_salary2;
+
+_____________________________________________________________________________
+SIMPLE and COMPLEX views
+
+--- SIMPLE VIEW              |            COMPLEX VIEW
+--- one table                |            join tables
+--- no functions             |            functions
+--- no aggregation           |            aggregation
+--- can use DML commands     |            cannot use DML commands
+
+select * from students;
+
+insert into students values(1, 'Alex', 3, 1);
+insert into students values(2, 'Olesya', 2, 2);
+insert into students values(3, 'Masha', 1, 1);
+
+create view v101 as
+(select name, course from students);
+
+select * from v101;
+
+insert into v101 values ('Ivan', 4);
+
+delete from v101 where name = 'Ivan';
+
+alter table students
+modify (id not null);
+
+
+create view v105 as
+(select SUBSTR(name, 2) name, course from students);
+
+select * from v105;
+
+insert into v105 values ('Oleg', 3);
+--- Операция не проходит
+delete from v105 where name = 'lex';
+
+create view v106 as select distinct name, course from students;
+select * from v106;
+insert into v106 values ('Oleg', 3);
+--- Операция не проходит
+delete from v106 where name = 'Masha';
+--- Операция не проходит
+
+create view v107
+(as select name n, course c from students);
+
+insert into v107 values('Kolya', 3);
+delete from v107 where n = 'Masha';
+
+select * from v107;
+
+create view v108 as
+(select rownum r, name, course from students);
+
+select * from v108;
+
+_____________________________________________________________________________
+Создание CREATE VIEW;
+
+select * from students;
+
+drop table students;
+drop table faculties;
+
+CREATE TABLE students(
+id number,
+name varchar2(15),
+course number
+);
+
+insert into students values (1, 'Alex', 5);
+insert into students values (2, 'Olesya', 4);
+insert into students values (3, 'Anton', 3);
+insert into students values (4, 'Nastya', 2);
+insert into students values (5, 'Vasya', 3);
+COMMIT;
+
+--- Шаблон
+CREATE OR REPLACE {FORCE|NOFORCE} VIEW
+schema.view_name(alias1, alias2,...)
+AS subquery
+WITH CHECK OPTION {CONSTRAINT constrain_theme}
+WITH READ ONLY {CONSTRAINT constraint_name};
+
+select * from fin_emp2;
+
+create or replace view fin_emp2 as select * from students;
+
+select * from fin_emp2;
+
+create FORCE VIEW v201 as select * from students2;
+--- Несмотря на то, что students2 не существует, благодаря FORCE view 
+--- все равно создается
+
+create view v202 as select * from students where course > 2;
+select * from v202;
+
+insert into v202 values(7, 'Katya', 1);
+--- Закинулось в таблицу students
+select * from v202;
+
+create view v203 as select * from students
+where course > 2 with check option;
+
+insert into v203 values(7, 'Fedya', 1);
+--- Вернется ошибка, так как используется check option
+insert into v203 values(7, 'Fedya', 3);
+
+update v203 set course = 2 where name = 'Fedya';
+--- update так же не проходит, так как не удовлетворяется check option
+
+update v203 set course = 5 where name = 'Fedya';
+select * from v203;
+
+create view v204 as select * from students
+with read only;
+--- v204 изменить невозможно
+
+create view v210 as select * from students
+with read only constraint constraint_1;
+
+create view v211 (a, b, c) as select * from students;
+
+select * from v211;
+
+_____________________________________________________________________________
+ALTER VIEW and DROP VIEW
+
+--- Шаблон
+alter view 
+schema.view_name 
+COMPILE;
+
+create force view v18 as select name, last_name from students;
+select * from v18;
+
+alter table students add (last_name varchar2(15));
+alter view v18 compile; --- Проверка на компиляцию
+select * from v18;
+
+drop view v18;
+
+create view v212 as select * from v211;
+
+create view v301 as select * from students where id > 4;
+select * from v301 where name = 'Alex';
+
+_____________________________________________________________________________
+---SYNONYM
+--- Альтернативное имя объекта
+
+select * from employees;
+select * from hr.employees;
+select * from hr.employees@orclpdb2;
+
+--- Synonym позволяет переименовывать таблицы или view и "перемещать"
+--- таблицы в ту схему, которая пренадлежить userу, у которого есть доступ
+
+--- ШАБЛОН
+CREATE PUBLIC SYNONYM synonym_name
+FOR object_name;
+
+--- ШАБЛОН
+DROP PUBLIC SYNONYM synonym_name;
+
+--- ШАБЛОН
+ALTER PUBLIC SYNONYM synonym_name
+COMPILE;
+
+select * from students;
+
+create SYNONYM syn1 for students;
+
+select * from syn1;
+
+delete from syn1 where id = 7;
+
+create PUBLIC SYNONYM syn1 for employees;
+
+select * from syn1;
+--- В первую очередь проверяется private synonym
+
+DROP PUBLIC SYNONYM syn1;
+
+--- Если удалить таблицу student, синоним к нему остается,
+--- но им уже невозможно воспользоваться
+
+alter synonym syn1 compile;
+
+select * from syn1;
+
+_____________________________________________________________________________
+---INTRODUCTION TO SEQUENCE (Последовательности)
+
+--- яркий пример это employee_id в employees
+select * from employees;
+
+--- Шаблон
+CREATE SEQUENCE schema.sequence_name
+INCREMENT BY number
+START WITH number
+{MAXVALUE number | NOMAXVALUE}
+{MINVALUE number | NOMINVALUE}
+{CYCLE | NOCYCLE}
+{CACHE number | NOCACHE};
+
+--- Шаблон
+DROP SEQUENCE schema.sequence_name;
+_____________________________________________________________________________
+Работа с SEQUENCE ЧАСТЬ 1
+
+create sequence s1;
+---nextval
+---currval
+select s1.nextval from dual;
+select s1.currval from dual;
+
+drop table students;
+
+create table students(
+id number,
+name varchar2(25),
+course number,
+faculty_id integer
+);
+
+create table faculties(
+id number,
+name varchar2(15)
+);
+
+create sequence seq_st;
+
+create sequence seq_faculty
+start with 20
+increment by 5;
+
+insert into faculties values(seq_faculty.nextval, 'IT');
+insert into students values(seq_st.nextval, 'Alex', 1, seq_faculty.nextval);
+
+insert into faculties values(seq_faculty.nextval, 'Management');
+insert into faculties values(seq_faculty.nextval, 'Mathematic');
+insert into faculties values(seq_faculty.currval, 'History');
+
+
+insert into students values(seq_st.nextval, 'Olesya', 1, 25);
+insert into students values(seq_st.nextval, 'Anton', 1, seq_faculty.nextval);
+
+insert into students values(seq_st.nextval, 'Vasya', 1, seq_faculty.currval);
+COMMIT;
+
+select * from students;
+
+select * from faculties;
+
+CREATE sequence s3 increment by 2 maxvalue 17;
+select s3.nextval from dual;
+--- Доходит до 17 и возвращает ошибку
+
+CREATE sequence s4 increment by 2 maxvalue 17 cycle cache 3;
+select s4.nextval from dual;
+
+CREATE sequence s5 
+start with 7
+increment by 4
+maxvalue 17
+cycle cache 3;
+
+select s5.nextval from dual;
+---Начнет с 7, дойдет до 17 и вернется на 1
+
+drop table students;
+
+create table students(
+id number,
+name varchar2(25)
+);
+
+create sequence s10;
+
+insert into students values(s10.nextval, 'Alex');
+insert into students values(s10.nextval, 'Olesya');
+insert into students values(s10.nextval, 'Anton');
+ROLLBACK;
+insert into students values(s10.nextval, 'Nastya');
+
+select * from students;
+
+---sequence не зависит от commit и rollback
+
+
+_____________________________________________________________________________
+Работа с SEQUENCE ЧАСТЬ 2
+
+create table seq(
+n number
+);
+
+insert into seq values (1);
+commit;
+
+drop table students;
+
+create table students(
+id number primary key,
+name varchar2(25)
+);
+
+insert into seq values(1);
+insert into students values((select n from seq), 'Alex');
+
+update seq set n = n + 1;
+
+
+select * from students;
+select * from seq;
+
+alter sequence s10 increment by 5;
+
+insert into students values(s10.nextval, 'Kolya');
+insert into students values(s10.nextval, 'Fedor');
+
+drop sequence s10;
+
+create sequence s20;
+
+select s20.nextval from dual;
+select s20.currval from dual;

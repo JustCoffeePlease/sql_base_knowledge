@@ -1,0 +1,31 @@
+___________________________________________________________________________
+Nested functions
+
+ПРИМЕР ИЗ ПОЗАПРОШЛОГО УРОКА
+select TO_CHAR(TO_DATE('15?1987.7.18.19/09', 'hh24?YYYY.MI.SS.DD/mm'),
+'dd-MON-yyyy hh24:mi:ss') alias from dual;
+
+select LENGTH(UPPER(SYSDATE)) from dual;
+select SUBSTR(sysdate, 4) from dual;
+
+select first_name, LENGTH(first_name), ROUND(123.456789123456,
+LENGTH(first_name))
+from employees;
+
+select first_name, employee_id, LENGTH(employee_id),
+SUBSTR(first_name, LENGTH(employee_id)),
+LENGTH(SUBSTR(first_name, LENGTH(employee_id)))
+from employees;
+
+select TO_DATE('18-09-87', 'DD-MM-RR'),
+TO_CHAR(TO_DATE('18-09-87', 'DD-MM-RR'), 'DAY'),
+LENGTH(TO_CHAR(TO_DATE('18-09-87', 'DD-MM-RR'), 'fmDAY'))
+from dual;
+
+'fmDAY' -  fm для того, чтобы избавиться от лишних пробелов
+
+select first_name, last_name, phone_number,
+TO_NUMBER(SUBSTR(phone_number, INSTR(phone_number, '.') + 1), '999.9999') * 10000
+form_number
+from employees
+where employee_id < 130;

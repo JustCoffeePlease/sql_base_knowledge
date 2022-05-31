@@ -1,0 +1,3 @@
+Шаблон выражения select
+
+SELECT *|{DISTINC column(s) alias, expression(s) alias} FROM table 

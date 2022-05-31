@@ -1,0 +1,62 @@
+############################################################################
+Операторы сравнения
+=, >, <, >=, <=, !=, <>
+
+select first_name, last_name, salary from employees where salary < 10000;
+
+select * from employees where first_name >= 'Bruce';
+
+select * from job_history where start_date < '01.JAN.05';
+
+
+BETWEEN
+select first_name, last_name, salary from employees
+where salary between 4000 and 10000;
+
+select * from job_history where start_date between '01.JAN.05' and '01.JAN.09';
+
+select * from employees where first_name between 'A' and 'C';
+
+select * from employees where
+salary >= 4000 and salary <= 10000;
+
+IN
+select * from departments where
+location_id in (1700, 2400, 1500);
+
+select * from job_history;
+desc job_history;
+
+select * from job_history where job_id in ('IT_PROG', 'SA_REP');
+
+select * from job_history where end_date in ('31.DEC.07', '28.JAN.08');
+
+
+select * from departments where
+location_id in (1700, 2400, 1500) or
+location_id = 1500;
+
+
+IS NULL
+select * from employees where commission_pct is null;
+
+
+LIKE, %, _
+select * from employees where first_name = 'Steven';
+select * from employees where first_name like 'S%';
+% - специ символ, котоырй означает, что после буквы S может быть любое
+количесвто символов
+select * from employees where first_name like '%r';
+select * from employees where first_name like 'A%r';
+
+select * from employees where first_name like 'D_n';
+_ - спецсимвол, который означает, что между буквами D и N может стоять
+только один символ
+select * from employees where first_name like 'A%d%';
+
+select * from employees where first_name like '__n%';
+
+select * from employees where job_id like 'ST_%';
+
+Чтобы _ отображался как обычныый символ, необходимо использовать escape
+select * from employees where job_id like 'ST\_%' escape '\';

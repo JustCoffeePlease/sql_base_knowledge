@@ -1,0 +1,28 @@
+############################################################################
+homework_12
+
+create table test200(
+id integer,
+name1 varchar2(15),
+name2 varchar2(15),
+address1 varchar2(15),
+address2 varchar2(15)
+);
+
+select * from test200;
+
+update test200 set &col = &val where id = &id_val;
+
+set verify on;
+
+select * from test200
+where name1 = '&&name'
+and
+      name2 = '&name'
+and 
+      address1 = '&&address'
+and
+      address2 = '&address';
+      
+UNDEFINE name;
+UNDEFINE address;

@@ -1,0 +1,29 @@
+#############################################################################
+#####################SELECT SELECTION########################################
+Концепция SELECT SELECTION это выбор строк из таблиц и определение ограничений
+
+SELECT * |{DISCINCT column(s) alias, expression(s) alias} from table
+                                                            WHERE condition(s);
+
+SELECT * FROM EMPLOYEES;
+SELECT  first_name, last_name from employees where salary = 17000;
+
+select first_name, salary from employees where last_name = 'King';
+
+select * from employees where hire_date = '24.MAR.08';
+
+select * from departments where location_id = 1700;
+
+select * from employees where employee_id = manager_id + 1000/10+1;
+
+select * from job_history where job_id='ST_CLERK';
+
+select * from employees where first_name = last_name;
+
+select * from employees 
+where 'Dr '||first_name||' '||last_name = 'Dr Hermann Baer';
+
+select * from employees 
+where 'Dr Hermann Baer' = 'Dr '||first_name||' '||last_name;
+
+select * from job_history where end_date = start_date + 364;

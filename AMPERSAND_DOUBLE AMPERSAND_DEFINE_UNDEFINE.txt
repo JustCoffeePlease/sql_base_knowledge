@@ -1,0 +1,63 @@
+##############################################################################
+##############################################################################
+SINGLE AMPERSAND SUBSTITUTION
+
+select first_name, last_name, salary
+from employees
+where employee_id = 130;
+
+select first_name, last_name, salary
+from employees
+where employee_id = &ID;
+
+select first_name, last_name, salary
+from employees
+where first_name = '&name';
+
+select first_name, last_name, salary
+from employees
+where first_name = '&name'
+and salary > &salary;
+
+____________________________________________________________________________
+DOUBLE AMPERSAND SUBTITUTION
+
+select first_name, last_name, salary
+from employees
+where first_name like '%s%'
+and last_name like '%s%';
+
+select first_name, last_name, salary
+from employees
+where first_name like '%&&s%'
+and last_name like '%&s%';
+
+select first_name, last_name, &col from employees
+order by &col2;
+
+select first_name, last_name, &&col from employees
+order by &col;
+
+select &znach from employees;
+
+select &select_list
+from &table_name
+where &conditions
+order by &cl;
+
+select * from students;
+
+update students
+set &col3 = &value 
+where &condition;
+
+______________________________________________________________________________
+DEFINE and UNDEFINE
+
+UNDEFINE s;
+UNDEFINE col;
+DEFINE;
+DEFINE s = s;
+
+set define off; --- Чтобы символ & воспренимался как обычный символ
+set define on; --- Чтобы символ & воспренимался как специальный символ

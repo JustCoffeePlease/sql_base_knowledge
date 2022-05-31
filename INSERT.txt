@@ -1,0 +1,118 @@
+############################################################################
+############################################################################
+DML COMMANDS (DATA MANIPULATION LANGUAGE)
+-SELECT
+-INSERT
+-UPDATE
+-DELETE
+-MERGE
+
+____________________________________________________________________________
+---INSERT
+
+select * from employees;
+select * from countries;
+
+шаблон:
+INSERT INTO table_name column(s) VALUES (value(s));
+
+insert into countries values('SW', 'Sweden', 1);
+
+insert into countries (country_id, country_name, region_id)
+values('NR', 'Norway', 1);
+
+insert into countries (region_id, country_name, country_id)
+values(1, 'Greece', 'GR');
+
+insert into countries (country_id, country_name)
+values('PR', 'Portigal');
+
+insert into countries
+values('FL', 'Finland', null);
+
+
+---По возможности, при занесении данных в таблицу нужно использовать функции
+--- это best practice
+insert into employees (employee_id, last_name, email, hire_date, job_id)
+values (208, INITCAP('Vasilieva'), UPPER('vasilieva'), 
+TO_DATE('18-JAN-2019', 'DD-MON-YYYY'), UPPER('it_prog'));
+
+select * from employees
+where last_name like 'Vasilieva';
+
+
+insert into employees (employee_id, last_name, email, hire_date, job_id)
+values (209, INITCAP('Vasilieva'),
+        UPPER('vasilieva1'), sysdate, UPPER('it_prog'));
+        
+____________________________________________________________________________
+INSERT с использованием SUBQUERY
+--- Вставляем в таблицу несколько строк
+
+INSERT INTO table_name
+column(s)
+SUBQUERY;
+
+create table new_emps
+(
+emp_id integer,
+name varchar2(20),
+start_date date,
+job varchar2(10)
+);
+ 
+INSERT INTO new_emps (emp_id, name, start_date)
+(select employee_id, first_name, hire_date from employees
+where employee_id > 200);
+
+select * from new_emps;
+
+INSERT INTO new_emps
+(select employee_id, first_name, hire_date from employees
+where employee_id > 200);
+---Возвращает ошибку 
+---Так как в таблице 4 столбца, а мы добавляем только три 
+
+INSERT INTO new_emps
+(select employee_id, first_name, hire_date, job_id from employees
+where employee_id > 200);
+
+_____________________________________________________________________________
+INSERT в несколько таблиц;
+
+create table emps_with_high_salary
+(
+name varchar2(20),
+salary integer
+);
+
+create table emps_with_dept_100
+(
+name varchar2(20),
+salary integer
+);
+
+create table some_emps
+(
+name varchar2(20),
+salary integer
+);
+
+DROP TABLE emps_with_high_salary;
+DROP TABLE emps_with_dept_100;
+DROP TABLE some_emps;
+
+
+INSERT ALL
+WHEN department_id = 100 THEN
+INTO emps_with_dept_100 VALUES (first_name, salary)
+WHEN salary > 15000 THEN
+INTO emps_with_high_salary (name) VALUES (last_name)
+WHEN 5=5 THEN
+INTO some_emps (name, salary) VALUES (first_name, salary)
+(select first_name, last_name, salary, department_id
+from employees where LENGTH(first_name) > 5);
+
+SELECT * FROM emps_with_dept_100;
+SELECT * FROM emps_with_high_salary;
+SELECT * FROM some_emps;

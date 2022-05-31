@@ -1,0 +1,109 @@
+__________________________________________________________________________
+DATE FUNCTIONS
+
+__________________________________________________________________________
+SYSDATE
+select * from JOB_HISTORY;
+select * from nls_session_parameters where parameter='NLS_DATE_FORMAT';
+
+select SYSDATE from dual;
+SYSDATE возвращает дату нашего database сервера!
+сложение, умножение и деление дат запрещено
+
+select sysdate, sysdate-5, sysdate+5, sysdate+5.5 from dual;
+
+select TO_CHAR(sysdate, 'DD-MM-RR hh24:mi:ss') from dual;
+
+select * from employees;
+
+select sysdate-hire_date from employees;
+
+
+__________________________________________________________________________
+MONTHS_BETWEEN(end_date, start_date)
+
+Возвращает количество месяцев между датами
+Где 
+start_date - дата "с",
+end_date - дата "по"
+
+
+
+
+select * from job_history;
+select employee_id, MONTHS_BETWEEN(end_date, start_date) from job_history;
+
+select MONTHS_BETWEEN('30.MAR.22', '29.MAR.22') from dual;
+select MONTHS_BETWEEN('30.MAR.22', '29.MAR.22')*31 from dual;
+
+__________________________________________________________________________
+ADD_MONTHS(date, number_of_months)
+date - дата
+Number_of_months - количество месяцев, которые мы будем добавлять в датах
+
+select * from job_history;
+select end_date, ADD_MONTHS(end_date, 4) from job_history;
+select end_date, ADD_MONTHS(end_date, -4) from job_history;
+select ADD_MONTHS('30.SEP.22', 1) from dual;
+select ADD_MONTHS('31.DEC.22', 2) from dual;
+
+Ищем сотрудников, которые на текущий период проработали более 5 месяцев
+select * from employees where MONTHS_BETWEEN('01.JAN.10', hire_date) > 60;
+
+__________________________________________________________________________
+NEXT_DAY
+Функция позволяет найти ближайшую дату интересующего дня недели
+Например, нас интересует дата следующего понедельника
+select NEXT_DAY(sysdate, 1) from dual;
+
+select * from sys.nls_session_parameters;
+
+select NEXT_DAY(sysdate, 'WEDNESDAY') from dual;
+
+select  NEXT_DAY('31.DEC.22', 'MONDAY')-7 from dual;
+
+__________________________________________________________________________
+LAST_DAY(date, day_of_the_week)
+Функция показывает последний день месяца
+
+select LAST_DAY(sysdate) from dual;
+select hire_date, last_day(hire_date)-hire_date has_worked from employees;
+
+
+__________________________________________________________________________
+Для date ROUND(date, date precision format)
+
+date - дата
+date precision format - точность округления
+
+Вес - СС
+Год - YYYY
+Четверть - Q
+Месяц - ММ
+Неделя - W
+День - DD
+Час - HH
+Минута - MI
+
+
+select hire_date from employees where employee_id IN (120, 121);
+
+select hire_date, ROUND(hire_date, 'YYYY') from employees 
+                                                where employee_id IN (120, 121);
+                                                
+select hire_date, ROUND(hire_date, 'MM') from employees 
+                                                where employee_id IN (120, 121);
+
+
+Если не указывать параметр округления, по умолчанию оно будет до дня                                             
+select hire_date, ROUND(hire_date) from employees 
+                                                where employee_id IN (120, 121);
+                                                
+___________________________________________________________________________
+Для date TRUNC(date, date precision format)
+
+select hire_date, TRUNC(hire_date, 'CC') from employees 
+                                                where employee_id IN (120, 121);
+
+select hire_date, TRUNC(hire_date, 'MM') from employees 
+                                                where employee_id IN (120, 121);

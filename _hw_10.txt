@@ -1,0 +1,66 @@
+#############################################################################
+homework_10
+
+CREATE TABLE locations2 as (select * from locations where 1=2);
+
+select * from locations2;
+select * from locations;
+
+insert into locations2 (location_id, street_address, city, country_id)
+(select location_id, street_address, city, country_id from locations
+join countries using(country_id)
+where country_name = 'Italy');
+COMMIT;
+
+insert into locations2 
+(select location_id, street_address, city, country_id from locations
+join countries using(country_id)
+where upper(country_name) like 'FRANCE');
+COMMIT;
+
+CREATE TABLE locations4europe as (select * from locations where 1=2);
+
+INSERT ALL
+WHEN 5=5 THEN
+INTO locations2 values(location_id, street_address, postal_code,
+                       city, state_province, country_id)
+WHEN location_id in
+                    (select location_id from locations l
+                     join countries c using(country_id)
+                     join regions r using(region_id)
+                     where upper(r.region_name) like 'EUROPE')
+THEN
+INTO locations4europe (location_id, street_address, city, country_id)
+                values (location_id, street_address, city, country_id)
+(SELECT * FROM locations);
+COMMIT;
+
+select * from locations;
+select * from locations2;
+select * from locations4europe;
+
+UPDATE locations2
+SET postal_code = 21061996
+where postal_code is null;
+ROLLBACK;
+
+UPDATE locations2
+SET postal_code = 
+(select postal_code from locations where location_id = 2600)
+where postal_code is null;
+COMMIT;
+
+DELETE
+FROM locations2
+WHERE UPPER(country_id) LIKE 'IT';
+SAVEPOINT save_1;
+
+UPDATE locations2
+SET street_address = 'Sezam st.18'
+where location_id > 2500;
+SAVEPOINT save_2;
+
+DELETE
+FROM locations2
+WHERE street_address = 'Sezam st.18';
+ROLLBACK TO SAVEPOINT save_2;

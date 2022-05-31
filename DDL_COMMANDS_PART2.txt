@@ -1,0 +1,502 @@
+############################################################################
+############################################################################
+DDL commands part 2
+
+CONSTRAINT (ОГРАНИЧЕНИЯ)
+
+_____________________________________________________________________________
+UNIQUE CONSTRAINT
+
+UNIQUE принуждает столбец(цы) содержать только уникальные значения. 
+       Исключения - null
+       
+CREATE TABLE students(
+id number CONSTRAINT st_id_unique UNIQUE,
+name varchar2(15),
+course number,
+faculty_id integer,
+avg_score number(5, 2),
+start_date date,
+scholarship integer
+);
+CREATE TABLE faculties(
+id number,
+name varchar2(15)
+);
+
+INSERT INTO students 
+values (1, 'Alex', 1, 3, 8.2, TO_DATE('01-SEP-2014', 'DD-MON-YYYY'), 1450);
+
+INSERT INTO students 
+values (1, 'Alex', 1, 3, 8.2, TO_DATE('01-SEP-2014', 'DD-MON-YYYY'), 1450);
+--- Возвращается ошибка, так как на таблицу id
+--- мы наложили ограничения уникальности
+--- если вместо id использовать значение null, то строка добавится
+
+INSERT INTO students 
+values (null, 'Olesya', 1, 2, 9.6, TO_DATE('01-SEP-2003', 'DD-MON-YYYY'), 1500);
+
+INSERT INTO students 
+values (2, 'Natasha', 1, 2, 7.6, TO_DATE('01-SEP-2018', 'DD-MON-YYYY'), 2500);
+COMMIT;
+
+select * from students;
+
+DROP TABLE students;
+
+____________________________________________________________________________
+COMPOSITE CONSTRAINTS;
+
+
+CREATE TABLE students(
+id number,
+name varchar2(15),
+course number,
+faculty_id integer,
+avg_score number(5, 2),
+start_date date,
+scholarship integer,
+CONSTRAINT st_id_unique UNIQUE (id, name)
+);
+
+---В данном примере уникальность проверяетя по паре значений,
+--- указанных в constraint. Таким образом, в таблице могут быть одинаковые
+--- значения id и уникальные значения name, но по отдельности
+
+CREATE TABLE students(
+id number,
+name varchar2(15),
+course number,
+faculty_id integer,
+avg_score number(5, 2),
+start_date date,
+scholarship integer,
+CONSTRAINT st_id_unique UNIQUE (id)
+);
+
+INSERT INTO students 
+values (1, 'Alex', 1, 3, 8.2, TO_DATE('01-SEP-2014', 'DD-MON-YYYY'), 1450);
+INSERT INTO students 
+values (2, 'Olesya', 1, 2, 9.6, TO_DATE('01-SEP-2003', 'DD-MON-YYYY'), 1500);
+INSERT INTO students 
+values (3, 'Natasha', 1, 2, 7.6, TO_DATE('01-SEP-2018', 'DD-MON-YYYY'), 2500);
+
+select * from students;
+
+drop table students;
+
+CREATE TABLE students(
+id number,
+name varchar2(15),
+course number,
+faculty_id integer,
+avg_score number(5, 2),
+start_date date,
+scholarship integer,
+UNIQUE (id)
+);
+
+CREATE TABLE students(
+id number UNIQUE,
+name varchar2(15),
+course number,
+faculty_id integer,
+avg_score number(5, 2),
+start_date date,
+scholarship integer
+);
+
+select * from students;
+
+CREATE TABLE students(
+id number,
+name varchar2(15),
+course number,
+faculty_id integer,
+avg_score number(5, 2),
+start_date date,
+scholarship integer
+);
+
+CREATE TABLE faculties(
+id number,
+name varchar2(15)
+);
+
+alter table students
+add constraint st_id_unique UNIQUE(id);
+
+insert into faculties values (1, 'CS');
+insert into faculties values (2, 'Economics');
+insert into faculties values (2, 'Philology');
+
+update faculties
+set id = 3
+where name = 'Philology';
+COMMIT;
+
+select * from faculties;
+
+alter table faculties add UNIQUE(id);
+
+drop table students;
+drop table faculties;
+
+alter table students MODIFY(id constraint abc UNIQUE);
+
+alter table faculties MODIFY(id UNIQUE);
+
+alter table students drop constraint abc;
+
+____________________________________________________________________________
+NOT NULL  CONSTRAINT
+--- Не разрешает столбцам иметь значения null;
+
+select * from students;
+select * from faculties;
+
+drop table students;
+drop table faculties;
+
+CREATE TABLE students(
+id number,
+name varchar2(15),
+course number constraint stud_course_notnull NOT NULL,
+faculty_id integer
+);
+
+CREATE TABLE faculties(
+id number,
+name varchar2(15)
+);
+
+insert into students
+values (1, 'Alexander', null, 1);
+insert into students (id, name, faculty_id)
+values (1, 'Alexander', 1);
+
+insert into students
+values (1, 'Alex', 3, 1);
+
+
+--- Варианты записи
+CREATE TABLE students(
+id number,
+name varchar2(15),
+course number NOT NULL,
+faculty_id integer
+);
+
+alter table students MODIFY
+(course constraint st_course_notnull not null);
+
+alter table students MODIFY
+(course not null;
+
+_____________________________________________________________________________
+PRIMARY KEY;
+Принуждает столбец(цы) содержать только уникальные значения
+и не разрешает содержать значение 'null' 
+PRIMARY KEY в таблице должен быть всего один. Если еще на один
+столбец необходимо наложить ограничение, можно воспользоваться
+UNIQUE и NOT NULL;
+
+drop table students;
+
+
+CREATE TABLE students (
+id number constraint st_id_pk primary key,
+name varchar2(15),
+course number,
+faculty_id integer
+);
+
+INSERT INTO students VALUES (1, 'Alex', 4, 5);
+INSERT INTO students VALUES (2, 'Olesya', 4, 4);
+INSERT INTO students VALUES (1, 'Misha', null, 3);
+---Возвращается ошибка
+INSERT INTO students (id, name, faculty_id)
+VALUES (null, 'Natasha', 2);
+---Возвращается ошибка
+
+CREATE TABLE students (
+id number primary key,
+name varchar2(15),
+course number,
+faculty_id integer
+);
+
+CREATE TABLE students (
+id numbery,
+name varchar2(15),
+course number,
+faculty_id integer,
+constraint pk primary key (id)
+);
+
+CREATE TABLE students (
+id numbery,
+name varchar2(15),
+course number,
+faculty_id integer,
+primary key (id)
+);
+
+CREATE TABLE students (
+id number,
+name varchar2(15),
+course number,
+faculty_id integer,
+primary key (id, name)
+);
+
+Разрешается использовать primary key в alter table -/-/- modify
+
+ALTER TABLE students MODIFY (id constraint pk primary key);
+ALTER TABLE students add constraint pk primary key (id);
+ALTER TABLE students add primary key (id);
+
+_____________________________________________________________________________
+FOREIGN KEY
+
+--- Принуждает использовать только значения из определенного столбца
+--- таблицы-родителя или значение 'null'
+
+--- Ссылка в foreign key должна быть или на столбец с ограничением unique
+--- или с ограничением primary key
+
+--- Можно делать ссылку на столбец в одной таблице
+
+select * from employees;
+select * from departments;
+
+--- department_id в departments - родитель
+--- department_id в employees - ребенок
+
+select * from students;
+select * from faculties;
+
+CREATE TABLE faculties(
+id number primary key,
+name varchar2(15)
+);
+
+CREATE TABLE students (
+id number,
+name varchar2(15),
+course number,
+faculty_id integer constraint st_faculty_fk references faculties(id)
+);
+
+drop table students;
+drop table faculties;
+
+insert into faculties values (1, 'CS');
+insert into faculties values (2, 'Marketing');
+
+INSERT INTO students VALUES (1, 'Alex', 4, 5);
+--- Возвращается ошибка, так как числа 5 нет в таблице факультетов
+INSERT INTO students VALUES (2, 'Olesya', 4, 1);
+INSERT INTO students VALUES (1, 'Misha', null, 2);
+
+CREATE TABLE students (
+id number,
+name varchar2(15),
+course number,
+faculty_id integer,
+constraint fk foreign key(faculty_id) references faculties(id)
+);
+
+ALTER TABLE students MODIFY(
+constraint fk faculty_id references faculties(id));
+
+ALTER TABLE students MODIFY(
+faculty_id constraint fk references faculties(id));
+
+ALTER TABLE students MODIFY (faculty_id references faculties(id));
+
+ALTER TABLE students ADD CONSTRAINT fk FOREIGN KEY (faculty_id)
+REFERENCES faculties(id);
+
+ALTER TABLE students ADD FOREIGN KEY (faculty_id)
+REFERENCES faculties(id);
+
+_____________________________________________________________________________
+ОПЦИЯ DELETE ДЛЯ FOREIGN KEY
+
+CREATE TABLE students(
+id number,
+name varchar2(15),
+course number,
+faculty_id integer references faculties
+);
+
+CREATE TABLE faculties(
+id number primary key,
+name varchar2(15)
+);
+
+insert into faculties values (1, 'CS');
+insert into faculties values (2, 'Marketing');
+insert into faculties values (3, 'Phisics');
+COMMIT;
+
+INSERT INTO students VALUES (1, 'Alex', 3, 1);
+INSERT INTO students VALUES (2, 'Olesya', 4, 1);
+INSERT INTO students VALUES (3, 'Misha', 1, 2);
+COMMIT;
+
+select * from faculties;
+select * from students;
+
+delete from faculties where id = 1;
+--- Возвращается ошибка, так как между студенами и факультетами есть связь.
+
+delete from faculties where id = 3;
+--- Удаление проходит,
+--- так как у трегьего факультета нет связи с таблицей студентов
+
+CREATE TABLE students(
+id number,
+name varchar2(15),
+course number,
+faculty_id integer references faculties ON DELETE CASCADE
+);
+
+--- Запись ON DELETE CASCADE означает, что при удалении факультета из
+--- таблицы факультетов, будет удаляться строка из таблицы студентов,
+--- где есть связь с таблицей факультетов
+
+CREATE TABLE students(
+id number,
+name varchar2(15),
+course number,
+faculty_id integer references faculties ON DELETE SET NULL
+);
+
+--- Запись ON DELETE SET NULL означает, что при удалении факультета из
+--- таблицы факультетов, в таблице студентов связь с удаленным факультетом
+--- будет заменяться на null
+
+_____________________________________________________________________________
+CHECK CONSTRAINT;
+
+CREATE TABLE students(
+id number,
+name varchar2(15),
+course number CONSTRAINT ch CHECK (course > 0 AND course < 6),
+faculty_id integer 
+);
+
+---Sysdate в этом constraint использовать нельзя
+
+INSERT INTO students VALUES (1, 'Alex', 3, 1);
+INSERT INTO students VALUES (2, 'Olesya', 4, 1);
+INSERT INTO students VALUES (3, 'Misha', 1, 7);
+COMMIT;
+
+select * from students;
+
+
+update students set course = 10 where id = 1;
+--- Возвращается ошибка, так как нарушается прописанное условие
+
+CREATE TABLE students(
+id number,
+name varchar2(15),
+course number,
+faculty_id integer,
+email varchar2(15) CHECK (INSTR(email, '@')> 0) constraint un UNIQUE
+);
+
+alter table studenrs modify (id constraint ch CHECK (id >=1));
+alter table students add check (course < 30);
+
+___________________________________________________________________________
+ВВЕДЕНИЕ В INDEX;
+--- Создается автоматически для столбцов с ограничениями UNIQUE и PRIMARY KEY
+
+select * from employees where first_name = 'John';
+select rowid from employees where first_name = 'John';
+select * from employees where rowid = 'AAAR6sAAEAAAKrGAAt';
+
+--- Типи индексов
+--- B-TREE (DEFAULT)
+--- BITMAP
+
+--- B-TREE эффективен тогда, когда:
+---1) Много строк в таблице
+---2) Кол-во строк в output отностительно общего кол-ва маленькое
+---3) В столбце с индексом должно быть много уникальных значений
+
+---Шаблон создания индексов
+CREATE {UNIQUE|BITMAP} INDEX
+schema.index_name ON
+schema.table_name(column1, column2,...);
+---Шаблон удаления индексов
+DROP INDEX schema.index_name;
+
+DROP TABLE students;
+DROP TABLE faculties;
+
+CREATE TABLE students(
+id number,
+name varchar2(15),
+course number,
+faculty_id number
+);
+
+CREATE TABLE faculties(
+id number,
+name varchar2(15)
+);
+
+CREATE INDEX in1 ON students(id);  
+
+insert into students values (1, 'Alex', 3);
+insert into students values (1, 'Olesya', 3);
+insert into students values (2, 'Misha', 3);
+insert into students values (2, 'Misha', 4);
+
+delete from students where course = 4;
+
+select * from students;
+
+CREATE UNIQUE INDEX in2 ON students(name);  
+CREATE INDEX in3 ON students(name, id);  
+
+CREATE UNIQUE INDEX st_in1 ON students(id);
+CREATE UNIQUE INDEX f_in1 ON faculties(id);
+CREATE UNIQUE INDEX st_in2 ON students(course);
+CREATE INDEX st_in3 ON students(name);
+
+alter table students add constraint st_pk primary key (id);
+alter table faculties add constraint f_pk primary key (id);
+alter table students add constraint st_un unique (course);
+
+--- Столбец с primary key всегда должен иметь свой индекс
+
+alter table students add constraint st_fk foreign key (faculty_id)
+references faculties(id);
+
+select * from faculties;
+
+DROP INDEX st_in3;
+
+_____________________________________________________________________________
+INDEX BITMAP
+
+CREATE {UNIQUE|BITMAP} INDEX
+schema.index_name ON
+schema.table_name (column1, column2, ...);
+
+DROP INDEX schema.index_name;
+
+--- BITMAP эффективен тогда, когда:
+---1) мало уникальных значений
+---2) Кол-во строк в output отностительно общего кол-ва большое
+---3) Использование булевой логики OR, AND, NOT
+
+CREATE BITMAP INDEX b_ind1 ON students(faculty_id);
+
+select * from v$version;

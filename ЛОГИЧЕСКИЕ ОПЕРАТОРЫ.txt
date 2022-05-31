@@ -1,0 +1,69 @@
+##############################################################################
+ЛОГИЧЕСКИЕ ОПЕРАТОРЫ 
+
+select * from employees
+where first_name like 'D%' and salary > 7000 and job_id = 'SA_REP';
+
+select * from employees
+where first_name like 'D%' or salary > 7000 or job_id = 'SA_REP';
+
+select * from employees where not job_id = 'SA_MAN';
+Красивая запись
+select * from employees where NOT (job_id = 'SA_MAN');
+
+select * from employees where last_name NOT like 'K%';
+
+select * from employees where  job_id not IN ('SA_MAN', 'ST_CLERK');
+
+select * from employees where salary NOT between 5000 and 6000;
+
+select * from employees where commission_pct is not null;
+
+select * from employees where commission_pct is not null 
+AND last_name NOT like '%n';
+
+
+Приоритетность операторов
+приоритет у AND выше чем у OR
+
+select * from employees;
+
+select * from employees
+where first_name like '__n%' and commission_pct is null;
+
+select * from employees
+where first_name like 'A%' and job_id = 'SA_REP';
+
+Проверка заключается в том, что сначала мы запускаем скрипт без использования 
+скобок и получаем результат из 15 строк. 
+В случае, если приоритетность у AND действительно выше, поставив скобки и
+запустив скрипт разницы не будет, вывод останется прежним.
+
+select * from employees
+where (first_name like '__n%' and commission_pct is null)
+OR 
+(first_name like 'A%' and job_id = 'SA_REP');
+
+Далее мы окружаем скобками условия OR. Получаем в результате отсутствие строк 
+select * from employees
+where first_name like '__n%' and (commission_pct is null
+OR 
+first_name like 'A%') and job_id = 'SA_REP';
+
+Рассмотрим случай, когда приоритетность работает слева направо
+select * from employees
+where ((first_name like '__n%' and commission_pct is null)
+OR 
+first_name like 'A%') and job_id = 'SA_REP';
+
+Таким образом, сначала отрабатывают все AND и только потом запускается OR
+
+select * from employees;
+where first_name like '__n%' and (commission_pct is null
+OR 
+first_name like 'A%') and job_id = 'SA_REP';
+select first_name, last_name, salary, department_id, job_id, commission_pct
+from employees
+where last_name like '%i%' and salary > employee_id * 50
+OR
+job_id in ('IT_PROG', 'PU_CLERK') and commission_pct is null;

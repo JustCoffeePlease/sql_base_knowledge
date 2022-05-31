@@ -1,0 +1,143 @@
+____________________________________________________________________________
+OUTER JOIN
+
+LEFT OUTER JOIN
+
+SELECT column(s) FROM
+table_1 LEFT JOIN table_2
+ON (column1 = column2);
+
+select first_name, last_name, salary, department_name
+from employees e 
+join departments d 
+on (e.department_id = d.department_id);
+Выводятся только те строки, которые удовлетворяют указанным условиям.
+Если мы мы применим LEFT OUTER JOIN;
+
+select first_name, last_name, salary, department_name
+from employees e 
+left outer join departments d 
+on (e.department_id = d.department_id);
+Получаем дополнительную строку, где указан работник, у которого нет департамента
+То есть получили данные из левой таблицы, которые не удовлетворяют указанным
+условиям
+
+Еще один пример
+select first_name, last_name, salary, department_name
+from departments d
+left outer join  employees e 
+on (e.department_id = d.department_id);
+
+select first_name, last_name, salary, department_name
+from departments d
+left outer join  employees e 
+on (e.department_id = d.department_id)
+where department_name like '%i%';
+
+select first_name, salary, min_salary, max_salary
+from employees e
+left outer join jobs j
+on (e.job_id = j.job_id and salary*2<max_salary);
+Будут выводиться все 107 сотрудников, так как мы использовали 
+LEFT OUTER JOIN. При этом, у сотрудников, которые не удовлетворяют условиям,
+данные из правой таблицы будут null
+
+select * from locations;
+
+select postal_code, city, department_name
+from locations l 
+join departments d
+on (d.location_id = l.location_id);
+
+select postal_code, city, department_name
+from locations l 
+left outer join departments d
+on (d.location_id = l.location_id);
+
+select department_name, d.department_id, first_name
+from departments d
+left outer join employees e
+on (e.department_id = d.department_id)
+where first_name is null;
+
+___________________________________________________________________________
+RIGTH OUTER JOIN
+
+SELECT column(s) FROM
+table_1 RIGHT OUTER JOIN table_2
+ON (column1 = column2);
+Все работает так же как и с left outer join, только в правую сторону
+
+select first_name, last_name, salary, department_name
+from employees e 
+right outer join departments d 
+on (e.department_id = d.department_id);
+Теперь дополняется не один работник из левой таблицы,
+а департаменты из правой таблицы
+
+Запись с using
+select first_name, last_name, salary, department_name
+from employees e 
+right outer join departments d 
+using (department_id);
+
+select * from countries;
+select * from locations;
+
+select country_name, city, street_address
+from locations l
+right outer join countries c
+on (l.country_id = c.country_id);
+
+____________________________________________________________________________
+FULL OUTER JOIN
+
+SELECT column(s) FROM
+table_1 FULL OUTER JOIN table_2
+ON (column1 = column2);
+
+На примере, помимо строк, для которых выражение это True, будут выводиться 
+работники, у которых нет департамента (он один из левой таблицы) и будут
+выводиться департаменты, у которых нет работников (из правой таблицы)
+
+select first_name, last_name, salary, department_name
+from employees e 
+full outer join departments d
+on (e.department_id = d.department_id);
+
+Для красивого вывода сделаем следующее:
+select NVL(first_name, 'no employee'), NVL(last_name, 'no employee'),
+NVL(salary, 0), NVL(department_name, 'no department')
+from employees e 
+full outer join departments d
+on (e.department_id = d.department_id);
+
+
+_____________________________________________________________________________
+CROSS JOIN
+
+SELECT column(s)
+FROM table_1
+CROSS JOIN
+table_2;
+Каждая строка из первой таблицы объединяется с каждой строкой 
+из второй таблицы
+
+select * from countries;
+select * from jobs;
+select * from regions;
+
+select * from countries
+cross join regions;
+
+select count(*) from countries
+cross join regions;
+
+select * from countries
+cross join regions
+where countries.region_id > 2
+order by country_id;
+
+select * from countries natural join jobs;
+Если нет столбцов с общим названием, то выполяется
+операция как cross join

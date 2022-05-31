@@ -1,0 +1,52 @@
+#############################################################################
+homework_11_3
+
+create table emp1000
+as
+(select first_name, last_name, salary, department_id from employees);
+
+select * from emp1000;
+
+create force view v1000
+as
+(select emp.first_name,
+            emp.last_name,
+                emp.salary,
+                    dep.department_name,
+                        emp.city
+from emp1000 emp
+join departments dep on (emp.department_id = dep.department_id));
+
+alter table emp1000
+add (city varchar2(25));
+
+alter view v1000 compile;
+
+create public synonym syn1000
+for v1000;
+
+drop view v1000;
+drop public synonym syn1000;
+drop table emp1000;
+
+create sequence seq1000
+increment by 4
+start with 12
+maxvalue 200
+cycle;
+
+alter sequence seq1000
+nomaxvalue
+nocycle;
+
+select * from employees;
+
+INSERT INTO employees (employee_id, last_name, email, hire_date, job_id)
+values (seq1000.nextval, 'Vasiliev', 'AVASILIEV', SYSDATE-1000, 'IT_PROG');
+
+INSERT INTO employees (employee_id, last_name, email, hire_date, job_id)
+values (seq1000.nextval, 'Kharlamova', 'OKHARLAMOVA', SYSDATE-1500, 'IT_PROG');
+
+select * from employees;
+
+COMMIT;
